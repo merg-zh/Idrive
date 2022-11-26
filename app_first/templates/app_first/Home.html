@@ -29,7 +29,7 @@
                 </form>
             {% load static%}
             {% for ti in title %}
-            <audio controls id="audio_{{ forloop.counter }}" style="display:none;"><source src="{{ STATIC_URL }}{{request.user}}/{{ti}}.mp3" type="audio/mp3"></audio>
+            <audio controls id="audio_{{ forloop.counter }}" style="display:none;"><source src="{% static "merg-zh/Proof.mp3" %}" type="audio/mp3"></audio>
             <div class="card my-4" style="width: 60vw;" id="card_{{forloop.counter}}">
                 <div class="card-body">
                     <p class="text-secondary" style="font-size:min(2vmax, 25px);" id="tt_{{forloop.counter}}">{{ti}}</p>
