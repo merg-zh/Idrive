@@ -118,7 +118,7 @@ import os
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'https://idrive-production.up.railway.app/static/'
 
 STATIC_ROOT  = "F:/my file/programfile/project_folder/idrive/static"
 
