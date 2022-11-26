@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-%ohmnpaqb&7%s**+-@t+qb!92m8lb4a85d=)g7d$u7u9ds1)lw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['idrive-production.up.railway.app', '127.0.0.1']
 
@@ -113,14 +113,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-import os
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'https://idrive-production.up.railway.app/static/'
+STATIC_URL = BASE_DIR + "static/"
 
-STATIC_ROOT  = "F:/my file/programfile/project_folder/idrive/static"
+STATIC_ROOT  = BASE_DIR + "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
