@@ -45,14 +45,17 @@ def HomeView(request):
     else:
         user_data = data.objects.get(username = username)
     if request.method == "POST":
-        if 'content' in request.POST:
-            file = request.POST['content']
-            file_name = (request.FILES['file'].name)[:-4]
-            dec_file = base64.b64decode( file )
-            if not file_name in user_data.title:
-                user_data.title.append(file_name)
-                with open(STATICFILES_DIRS[0] +"/"+username+"/"+file_name+".mp3", "wb") as f:
-                    f.write(dec_file)
+        if 'file' in request.FILES:
+            names = []
+            contents = []
+            for f in request.FILES.getlist('file'):
+                names.append(f.name)
+                contents.append(f.read())
+            for i,name in enumerate(names):
+                if not name in user_data.title:
+                    user_data.title.append(name)
+                    with open(STATICFILES_DIRS[0] +"/"+username+"/"+name, "wb") as f:
+                        f.write(contents[i])
         elif 'delete_post' in request.POST:
             delete_name = request.POST['st']
             num = user_data.title.index(delete_name)

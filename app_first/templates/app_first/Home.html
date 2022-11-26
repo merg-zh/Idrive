@@ -24,8 +24,7 @@
         <div class="container">
             <form action="/home/" method="POST" id="accept" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input type="file" name="file" accept=".mp3" id="mf" style="display: none;">
-                <input type="text" id="content" name="content" style="display: none;">
+                <input type="file" name="file" accept=".mp3" id="mf" style="display: none;" multiple>
                 </form>
             {% load static%}
             {% for ti in title %}
@@ -172,13 +171,7 @@
         mf.click();
     });
     mf.addEventListener("change", function(e){
-        var reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
-        reader.onload = function() {
-          var val = reader.result;
-          document.getElementById("content").value = val
-          document.getElementById("accept").submit();
-        }
+        document.getElementById("accept").submit();
     });
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     let ae;
