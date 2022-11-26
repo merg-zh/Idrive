@@ -52,6 +52,7 @@ def HomeView(request):
                 names.append(f.name)
                 contents.append(f.read())
             for i,name in enumerate(names):
+                name = name[:-4]
                 if not name in user_data.title:
                     user_data.title.append(name)
                     with open(STATICFILES_DIRS[0] +"/"+username+"/"+name, "wb") as f:
@@ -110,7 +111,9 @@ def HomeView(request):
         pl = ""
     else:
         pl = (user_data.play_list[0]).split('$$')
-    return render(request, 'app_first/Home.html', {'title':title, 'list_names':pl, 'play_list':play_list, 'list_dir':os.listdir(STATICFILES_DIRS[0]+"/merg-zh")})
+    return render(request, 'app_first/Home.html', {'title':title, 'list_names':pl, 'play_list':play_list})
 
 class LogoutView(LoginRequiredMixin, LogoutView):
     template_name = "app_first/top.html"
+
+#'list_dir':os.listdir(STATICFILES_DIRS[0]+"/merg-zh")
