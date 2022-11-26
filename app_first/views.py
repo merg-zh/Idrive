@@ -55,7 +55,7 @@ def HomeView(request):
                 name = name[:-4]
                 if not name in user_data.title:
                     user_data.title.append(name)
-                    with open(STATICFILES_DIRS[0] +"/"+username+"/"+name, "wb") as f:
+                    with open(STATICFILES_DIRS[0] +"/"+username+"/"+name+".mp3", "wb") as f:
                         f.write(contents[i])
         elif 'delete_post' in request.POST:
             delete_name = request.POST['st']
