@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/css/drawer.min.css">
+        <title>ホーム</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand navbar-dark bg-dark">
+            <div class="container-fluid">
+              <button class="mx-2" type="button" onclick="Open();" id="drawer" style="font-size:min(2vmax,20px);">☰</button>
+              <a class="navbar-brand mr-auto" href="/" style="font-size:min(3vmax,35px);">Idrive</a>
+              <input type="range" max="100" step="1" value="50" min="0" id="volume_range" style="width: 10%;" class="mx-4">
+              <button type="button" class="btn btn-primary my-1" style="white-space: nowrap;" id="sf">ファイルを選択</button>
+              <ul class="dropdown">
+                <button class="dropdown-toggle btn btn-info float-right" data-toggle="dropdown">{{ request.user }}</button>
+                    <ul class="dropdown-menu">
+                      <a href="{% url 'app_first:logout' %}" class="btn btn-success my-1" style="white-space: nowrap;">ログアウト</a>
+                    </ul>
+              </ul>
+            </div>
+        </nav>
+        <div class="container">
+            <form action="/home/" method="POST" id="accept" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="file" accept=".mp3" id="mf" style="display: none;">
+                <input type="text" id="content" name="content" style="display: none;">
+                </form>
+            {% load static%}
+            {% for ti in title %}
+            <audio controls id="audio_{{ forloop.counter }}" style="display:none;"><source src="{{ STATIC_URL }}{{request.user}}/{{ti}}.mp3" type="audio/mp3"></audio>
+            <div class="card my-4" style="width: 60vw;" id="card_{{forloop.counter}}">
+                <div class="card-body">
+                    <p class="text-secondary" style="font-size:min(2vmax, 25px);" id="tt_{{forloop.counter}}">{{ti}}</p>
+                    <input class="btn btn-danger" type="button" value = "Play" id="title_{{forloop.counter}}">
+                    <input type="range" id="range_{{forloop.counter}}" style="visibility: hidden;width: 30%" max="-5" value="0" step="1" onchange="Change(this);">
+                    <button class="btn btn-danger float-right" data-toggle="modal" data-target="#DeleteModal" id="delete_{{forloop.counter}}">削除</button>
+                    <ul class="dropdown">
+                        <button class="dropdown-toggle btn btn-info float-right" data-toggle="dropdown">＋</button>
+                            <ul class="dropdown-menu">
+                                {% for name in list_names %}
+                                <form action="/home/" method="POST">
+                                    {% csrf_token %}
+                                <input type="text" value="{{name}}$${{ti}}" name="name_cout" style="display: none;">
+                                <button type="submit" class="btn btn-secondary btn-light btn-block" name="append_playlist">{{name}}</button>
+                                </form>
+                                {% endfor %}
+                                <form action="/home/" method="POST">
+                                    {% csrf_token %}
+                                    <input type="text" style="display: none;" name="list_name" id = "dpln_{{forloop.counter}}">
+                                    <button type="submit" id="dpl_{{forloop.counter}}" class="btn btn-secondary btn-black btn-block" style="display: none;" name="delete_pl">このリストから削除</button>
+                                </form>
+                            </ul>
+                    </ul>
+                </div>
+            </div> 
+            {% if forloop.last %}
+            <h1 id="data_num" style="display:none;">{{forloop.counter}}</h1>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+
+<body class="drawer drawer--left">
+	<header role="banner">
+		<nav class="drawer-nav bg-secondary" role="navigation">
+			<ul class="drawer-menu">
+				<li><button type="button" class="btn btn-light btn-block my-2" onclick="Music_List(this);">マイミュージック</button></li>
+                {% for name in list_names %}
+                <li><button type="button" class="btn btn-info btn-block my-1" onclick="Open_List(this);" id="{{forloop.counter}}">{{name}}</button></li>
+                {% endfor %}
+                <li><button type="button" class="btn btn-light btn-block my-2" data-toggle="modal" data-target="#Create_List">プレイリスト作成</button></li>
+			</ul>
+		</nav>
+	</header>
+</body>
+
+    <!--　削除ダイアログ　-->
+<form action="/home/" method="POST">
+{% csrf_token %}
+<input type="text" style="display:none;" id="send_title" name="st">
+    <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="text">本当に削除しますか？</h4>
+                </div>
+                <div class="modal-body">
+                    <button type="submit" class="btn btn-danger" name="delete_post" id="delete_button">削除</button>
+                    <button type="button" class="btn btn-info" data-dismiss="modal">戻る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form action="/home/" method="POST">
+{% csrf_token %}
+    <div class="modal fade" id="Create_List" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="text">プレイリスト名</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control my-2" name="list_name">
+                    <button type="submit" class="btn btn-danger" name="createlist">作成</button>
+                    <button type="button" class="btn btn-info" data-dismiss="modal">戻る</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<h1 style="display: none;" id="plt">{{play_list}}</h1>
+
+<script type="text/javascript">
+    let audio_list = [];
+    let play_list = [];
+    let data_num = 0;
+    let play_lt = "";
+
+    window.addEventListener('DOMContentLoaded', function(){
+        $('.drawer').drawer();
+
+        try{
+        data_num = parseInt(document.getElementById("data_num").textContent);
+        play_lt = document.getElementById("plt").textContent;
+        }catch(error){
+            let data_num = 0
+        }
+
+        for(let i = 1; i<= data_num; i++){
+            audio_list.push(document.getElementById("tt_"+i).textContent);
+            play_list.push([document.getElementById("tt_"+i).textContent])
+        }
+
+        if(play_lt != ""){
+            let text = play_lt.split("###");
+            for(let i = 0; i < text.length; i++){
+                if(text[i] != "null"){
+                    let text2 = text[i].split("$$");
+                    for(let i2 = 0; i2 < text2.length; i2++){
+                        let basyo = audio_list.indexOf(text2[i2]);
+                        play_list[basyo].push(i);
+                    }
+                }
+            }
+        }
+    });
+
+    function Open(){
+        $('.drawer').drawer('open');
+    }
+
+    const getMobileOS = () => {
+      const ua = navigator.userAgent
+      if (/android/i.test(ua)) {
+        return "Android"
+      }
+      else if (/iPad|iPhone|iPod/.test(ua) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1){
+        return "iOS"
+      }
+    
+      return "Other"
+    }
+    let os = getMobileOS();
+    if(os == "iOS")document.getElementById("volume_range").style.display = "none";
+    let mf = document.getElementById("mf");
+    document.getElementById("sf").addEventListener("click", function(e){
+        mf.click();
+    });
+    mf.addEventListener("change", function(e){
+        var reader = new FileReader();
+        reader.readAsDataURL(e.target.files[0]);
+        reader.onload = function() {
+          var val = reader.result;
+          document.getElementById("content").value = val
+          document.getElementById("accept").submit();
+        }
+    });
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    let ae;
+    let ar;
+    let inta;
+    let rtt = 0;
+    let volume = 50;
+    var wm = new WeakMap();
+    let audioContext;
+    let gainNode;
+    
+    document.getElementById("volume_range").addEventListener("input", function(e){
+        volume = e.target.value;
+        ae.volume = parseInt(volume) / 100;
+    });
+    function change_value(){
+        rtt += 1;
+        ar.value = rtt;
+    }
+    let play_num = "0";
+    function Change(e){
+        ae.currentTime = e.value;
+        rtt = parseInt(e.value);
+    }
+    let stat = false;
+    document.body.addEventListener("click", function(e){
+        if(!stat){
+            audioContext = new AudioContext();
+            gainNode = audioContext.createGain();
+            stat = true;
+        }
+        let ni = String(e.target.id);
+        
+        if(ni.indexOf('title') != -1){
+            let st = ni.substring(6);
+            clearInterval(inta);
+            
+            if(e.target.value == "Play"){
+                ae  = document.getElementById("audio_"+st);
+                ar = document.getElementById("range_"+st);
+                if (wm.has(ae)) { 
+                    track = wm.get(ae); 
+                } else { 
+                    track = audioContext.createMediaElementSource(ae); 
+                  wm.set(ae, track); 
+                }
+                track.connect(audioContext.destination);
+                track.connect(gainNode).connect(audioContext.destination);
+                ae.play();
+                if(ar.max == -5){
+                    ar.max = ae.duration;
+                    if(os != "iOS"){
+                        ae.volume = parseInt(volume) / 100;
+                    }
+                }
+                e.target.value = "Stop"
+                if(play_num != st){
+                    if(play_num != 0){
+                        rtt = 0;
+                        document.getElementById("range_"+ play_num).style.visibility = "hidden";
+                        document.getElementById("audio_"+play_num).pause();
+                        document.getElementById("audio_"+play_num).currentTime = 0;
+                        ar.value = 0;
+                        document.getElementById("title_"+play_num).value = "Play";
+                    }
+                    ar.style.visibility = "visible";
+                }
+                play_num = st;
+                inta = setInterval(change_value, 1000);
+            }else{
+                e.target.value = "Play";
+                document.getElementById("audio_"+st).pause();
+            }
+        }
+        else if(ni.indexOf('delete') != -1)
+        {
+            let st = ni.substring(7);
+            document.getElementById("send_title").value = document.getElementById("tt_" + st).textContent;
+        }
+    });
+
+    function Music_List(e){
+        if(e.textContent == "マイミュージック"){
+            for(let i = 1; i <= data_num; i++){
+                document.getElementById("card_"+i).style.display = "block";
+                let elements = document.getElementsByName("delete_pl");
+                for(let element of elements){element.style.display="none";}
+            }
+        }
+    }
+
+    function Open_List(e){
+        var target = play_list.filter( item => item.includes( parseInt(e.id) - 1 ) );
+        let num = [];
+        for(let i = 0; i < target.length; i++){
+            num.push(audio_list.indexOf(target[i][0]));
+        }
+        for(let i = 0; i< audio_list.length; i++){
+            let i2 = i + 1;
+            if(num.indexOf(i) == -1)document.getElementById("card_"+i2).style.display = "none";
+            else {
+                document.getElementById("card_"+i2).style.display = "block";
+                document.getElementById("dpl_" + i2).style.display = "block";
+                document.getElementById("dpln_" + i2).value = i2+"$$"+e.id;
+            }
+        }
+    }
+    </script>
+
+<script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iScroll/5.1.3/iscroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/js/drawer.min.js"></script>
+</html>

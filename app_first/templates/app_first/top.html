@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/css/drawer.min.css">
+    <title>ログイン</title>
+    <style>
+        h1 {
+          position: relative;
+          color: #158b2b;
+          font-size: 2.5vmax;
+          text-align: center;
+          margin: 1em 0;
+        }
+        h1:before {
+          content: "";
+          position: absolute;
+          top: -1vmax;
+          left: 50%;
+          width: 13vmax;
+          height: 5vmax;
+          border-radius: 50%;
+          border: 0.5vmax solid #a6ddb0;
+          border-left-color: transparent;
+          border-right-color: transparent;
+          -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Idrive</h1>
+            <div id="login_card" class="tab-pane active">
+                <div class="card mt-3 mx-auto" style="width: 60%;">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="menu-list" role="tablist">
+                          <li class="nav-item">
+                            <a class="nav-link active" href="#login_form" data-bs-toggle="tab">ログイン</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link"  href="#signin_form" data-bs-toggle="tab">サインイン</a>
+                          </li>
+                        </ul>
+                    </div>
+                        <div class="card-body">
+                            ユーザー名
+                            <br>
+                            <input type="text" class="form-control" id="un">
+                            <br>
+                            パスワード
+                            <br>
+                            <input type="password" class="form-control" id="pass">
+                        </div>
+                        <div class="card-footer">
+                            <div class="tab-content mt-3">
+                                <div class="tab-pane active" id="login_form">
+                                    <button class="btn btn-outline-primary" id="lg">ログイン</button>
+                                </div>
+                                <div class="tab-pane" id="signin_form">  
+                                    <button class="btn btn-outline-primary" id="si">サインイン</button>
+                                </div>
+                            </div>
+                        </div>
+                </div>  
+            </div>
+        </div>
+    </div>
+
+    <form action="" method="POST" id="accept">
+        {% csrf_token %}
+        <input type="text" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="150" required id="id_username">
+        <input type="password" name="password" autocomplete="current-password" required id="id_password">
+        <input type="password" name="password1" autocomplete="new-password" required id="id_password1">
+        <input type="password" name="password2" autocomplete="new-password" required id="id_password2">
+        <button type="submit" id = "btn">
+    </form>
+
+    <script type="text/javascript">
+        document.getElementById("accept").style.display = "none";
+        document.getElementById("lg").addEventListener('click', function(e){
+            document.getElementById("id_username").value=document.getElementById("un").value;
+            let pas = document.getElementById("pass").value;
+            document.getElementById("id_password").value = pas;
+            document.getElementById("id_password1").value = "null";
+            document.getElementById("id_password2").value = "null";
+            document.getElementById("accept").submit();
+        });
+
+        document.getElementById("si").addEventListener('click', function(e){
+            document.getElementById("id_username").value=document.getElementById("un").value;
+            let pas = document.getElementById("pass").value;
+            document.getElementById("id_password1").value = pas;
+            document.getElementById("id_password2").value = pas;
+            document.getElementById("id_password").value = "null";
+            document.getElementById("accept").submit();
+        });
+    </script>
+</body>
+<script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+</html>
