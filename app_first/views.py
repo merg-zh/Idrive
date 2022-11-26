@@ -107,7 +107,7 @@ def HomeView(request):
         pl = ""
     else:
         pl = (user_data.play_list[0]).split('$$')
-    return render(request, 'app_first/Home.html', {'title':title, 'list_names':pl, 'play_list':play_list,'list_dir':os.listdir(STATICFILES_DIRS[0]+ "/" + username) })
+    return render(request, 'app_first/Home.html', {'title':title, 'list_names':pl, 'play_list':play_list})
 
 class LogoutView(LoginRequiredMixin, LogoutView):
     template_name = "app_first/top.html"
