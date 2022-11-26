@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from app_first.models import data
-from idrive.settings import STATIC_URL
+from idrive.settings import STATICFILES_DIRS
 import os
 
 def TopView(request):
@@ -41,7 +41,7 @@ def HomeView(request):
     username = str(request.user)
     if data.objects.filter(username = username).exists() == False:
         user_data = data.objects.create(username = username, title=[], play_list = [])
-        os.mkdir(STATIC_URL +"/"+username)
+        os.mkdir(STATICFILES_DIRS +"/"+username)
     else:
         user_data = data.objects.get(username = username)
     if request.method == "POST":
@@ -51,13 +51,13 @@ def HomeView(request):
             dec_file = base64.b64decode( file )
             if not file_name in user_data.title:
                 user_data.title.append(file_name)
-                with open(STATIC_URL +"/"+username+"/"+file_name+".mp3", "wb") as f:
+                with open(STATICFILES_DIRS +"/"+username+"/"+file_name+".mp3", "wb") as f:
                     f.write(dec_file)
         elif 'delete_post' in request.POST:
             delete_name = request.POST['st']
             num = user_data.title.index(delete_name)
             user_data.title.pop(num)
-            os.remove(STATIC_URL +"/"+username+"/"+delete_name+".mp3")
+            os.remove(STATICFILES_DIRS +"/"+username+"/"+delete_name+".mp3")
         elif 'createlist' in request.POST:
             new_list_name = request.POST['list_name']
             if user_data.play_list == []:
