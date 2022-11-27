@@ -5,13 +5,67 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/css/drawer.min.css">
         <title>ホーム</title>
+
+        <style>
+            .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20%;
+            background-color: #0099ff;
+            position: fixed;
+            }
+
+            input[type="range"] {
+              -webkit-appearance: none; /*これ無しだとスタイルがほぼ全く反映されないので注意 */
+              appearance: none;
+              cursor: pointer; /* カーソルを分かりやすく */
+              outline: none; /* スライダーのアウトラインは見た目がキツイので消す */
+              height: 14px; /* バーの高さ */
+              width: 100%; /* バーの幅 */
+              background: #8acdff; /* バーの背景色 */
+              border-radius: 10px; /* バーの両端の丸み */
+              border: solid 3px #dff1ff; /* バー周囲の線 */
+            }
+            /* WebKit向けのつまみ */
+            input[type="range"]::-webkit-slider-thumb {
+              -webkit-appearance: none; /*  デフォルトのつまみのスタイルを解除 */
+              background: #0088ff; /* 背景色 */
+              width: 24px; /* 幅 */
+              height: 24px; /* 高さ */
+              border-radius: 50%; /* 円形に */
+              box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.15); /* 影 */
+            }
+            /* Moz向けのつまみ */
+            input[type="range"]::-moz-range-thumb {
+              background: #0088ff; /* 背景色 */
+              width: 24px; /* 幅 */
+              height: 24px; /* 高さ */
+              border-radius: 50%; /* 円形に */
+              box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.15); /* 影 */
+              border: none; /* デフォルトの線を消す */
+            }
+            /* Firefoxで点線が周りに表示されてしまう問題の解消 */
+            input[type="range"]::-moz-focus-outer {
+              border: 0;
+            }
+            /* つまみをドラッグしているときのスタイル */
+            input[type="range"]:active::-webkit-slider-thumb {
+              box-shadow: 0px 5px 10px -2px rgba(0, 0, 0, 0.3);
+            }
+
+            h2 {
+              padding: 0.5rem 0.5rem;
+              border-left: 6px double rgb(0, 0, 0);
+            }
+        </style>
     </head>
     <body>
         <nav class="navbar navbar-expand navbar-dark bg-dark">
             <div class="container-fluid">
               <button class="mx-2" type="button" onclick="Open();" id="drawer" style="font-size:min(2vmax,20px);">☰</button>
               <a class="navbar-brand mr-auto" href="/" style="font-size:min(3vmax,35px);">Idrive</a>
-              <input type="range" max="100" step="1" value="50" min="0" id="volume_range" style="width: 10%;" class="mx-4">
+              <input type="range" max="100" step="1" value="50" min="0" id="volume_range" style="width: 15%;" class="mx-4">
               <button type="button" class="btn btn-primary my-1" style="white-space: nowrap;" id="sf">ファイルを選択</button>
               <ul class="dropdown">
                 <button class="dropdown-toggle btn btn-info float-right" data-toggle="dropdown">{{ request.user }}</button>
@@ -32,9 +86,8 @@
             <div class="card my-4" style="width: 60vw;" id="card_{{forloop.counter}}">
                 <div class="card-body">
                     <p class="text-secondary" style="font-size:min(2vmax, 25px);" id="tt_{{forloop.counter}}">{{ti}}</p>
-                    <input class="btn btn-danger" type="button" value = "Play" id="title_{{forloop.counter}}">
-                    <input type="range" id="range_{{forloop.counter}}" style="visibility: hidden;width: 30%" max="-5" value="0" step="1" onchange="Change(this);">
-                    <button class="btn btn-danger float-right" data-toggle="modal" data-target="#DeleteModal" id="delete_{{forloop.counter}}">削除</button>
+                    <input class="btn btn-danger" onclick="PLay_Pose(this);" type="button" value = "▶" id="title_{{forloop.counter}}">
+                    <button class="btn btn-danger float-right" onclick="Set_delete(this);" data-toggle="modal" data-target="#DeleteModal" id="delete_{{forloop.counter}}">削除</button>
                     <ul class="dropdown">
                         <button class="dropdown-toggle btn btn-info float-right" data-toggle="dropdown">＋</button>
                             <ul class="dropdown-menu">
@@ -57,15 +110,28 @@
             {% if forloop.last %}
             <h1 id="data_num" style="display:none;">{{forloop.counter}}</h1>
             {% endif %}
-        {% endfor %}
+            {% endfor %}
+    
+            <!--
+            {% for name in list_dir %}
+            <h1>{{name}}</h1>
+            {% endfor %}
+            -->
 
-        <!--
-        {% for name in list_dir %}
-        <h1>{{name}}</h1>
-        {% endfor %}
-        -->
-    </div>
-</body>
+        </div>
+        <footer class="footer">
+            <div style="text-align: center;">
+                <h2 class="mx-1" style="visibility: hidden;text-align: left;" id="title_text"></h2>
+                <input id="play_button" class="my-2 btn btn-light" style="font-size: 1.5vmax;" type="button" value="▶" onclick="PLay_Pose(this);" disabled>
+                <input id="pw_button" type="button" class="my-2 btn btn-light" style="font-size: 1.5vmax;border: none;outline: none;background: transparent;opacity: 0.5;" value="🔁" onclick="Play_Way();">
+            </div>
+            <div class="container" style="display: flex;text-align: center;justify-content: center;align-items: center;">
+                <input type="range" id="range" style="width: 50%;height:50%;" max="-5" value="0" step="1" onchange="Change(this);">
+            </div>
+        </footer>
+    </body>
+
+    
 
 <body class="drawer drawer--left">
 	<header role="banner">
@@ -92,7 +158,7 @@
                     <h4 class="modal-title" id="text">本当に削除しますか？</h4>
                 </div>
                 <div class="modal-body">
-                    <button type="submit" class="btn btn-danger" name="delete_post" id="delete_button">削除</button>
+                    <button type="submit" class="btn btn-danger" name="delete_post">削除</button>
                     <button type="button" class="btn btn-info" data-dismiss="modal">戻る</button>
                 </div>
             </div>
@@ -125,6 +191,25 @@
     let play_list = [];
     let data_num = 0;
     let play_lt = "";
+    let input_range = document.getElementById("range");
+
+    let ae;
+    let inta;
+    let rtt = 0;
+    let volume = 50;
+
+    let play_num = "0";
+    let be;
+    let stat = false;
+    let pb = document.getElementById("play_button");
+    let play_icon = "▶";
+    let stop_icon = "■";
+
+    let st = "";
+    let vale = "";
+
+    let pw = 1;
+    let pwb = document.getElementById("pw_button");
 
     window.addEventListener('DOMContentLoaded', function(){
         $('.drawer').drawer();
@@ -179,85 +264,133 @@
     mf.addEventListener("change", function(e){
         document.getElementById("accept").submit();
     });
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    let ae;
-    let ar;
-    let inta;
-    let rtt = 0;
-    let volume = 50;
-    var wm = new WeakMap();
-    let audioContext;
-    let gainNode;
+    
     
     document.getElementById("volume_range").addEventListener("input", function(e){
         volume = e.target.value;
         ae.volume = parseInt(volume) / 100;
     });
+
+    function Next(e){
+        let this_card = document.getElementById("card_"+st);
+        if(e == "finish"){
+            ae.currentTime = 0;
+            rtt = 0;
+            input_range.value = 0;
+            PLay_Pose(document.getElementById("title_"+st));
+        }
+        else if(e == "next"){
+            if(this_card.style.display == "block" || this_card.style.display == ""){
+                let num = parseInt(st) + 1;
+                if(num > data_num)num = 1;
+                if(document.getElementById("card_" + num).style.display == "none"){
+                    let bn = num;
+                    for(let i = num; i <= data_num; i++){
+                        let element = document.getElementById("card_" + i);
+                        if(element.style.display == "block"){
+                            num = i;
+                            break;
+                        }
+                        else i += 1;
+                    }
+                    if(bn == num){
+                        for(let i = 1; i <= data_num; i++){
+                            let element = document.getElementById("card_" + i);
+                            if(element.style.display == "block"){
+                                num = i;
+                                break;
+                            }
+                            else i += 1;
+                        }
+                    }
+                }
+                console.log(num + "/" + st);
+                if(num == st){
+                    ae.currentTime = 0;
+                    rtt = 0;
+                    input_range.value = 0;
+                }
+                else PLay_Pose(document.getElementById("title_"+num));
+            }
+            else{
+                let i2 = 1;
+                for(let i = 1; i <= data_num; i++){
+                    let element = document.getElementById("card_" + i);
+                    if(element.style.display == "block"){
+                        i2 = i;
+                        break;
+                    }
+                    else i += 1;
+                }
+                PLay_Pose(document.getElementById("title_"+i2));
+            }
+        }
+        else{
+            ae.currentTime = 0;
+            rtt = 0;
+            input_range.value = 0;
+        }
+    }
+
     function change_value(){
         rtt += 1;
-        ar.value = rtt;
+        input_range.value = rtt;
+        if(input_range.value == input_range.max){
+            if(pw == 1)Next("finish");
+            else if(pw == 2)Next("next");
+            else if(pw == 3)Next("random");
+        }
     }
-    let play_num = "0";
+
     function Change(e){
         ae.currentTime = e.value;
         rtt = parseInt(e.value);
     }
-    let stat = false;
-    document.body.addEventListener("click", function(e){
+
+    
+    function PLay_Pose(e){
+        let ni = String(e.id);
         if(!stat){
-            audioContext = new AudioContext();
-            gainNode = audioContext.createGain();
+            document.getElementById("play_button").disabled = false;
+            document.getElementById("title_text").style.visibility = "visible";
             stat = true;
         }
-        let ni = String(e.target.id);
-        
-        if(ni.indexOf('title') != -1){
-            let st = ni.substring(6);
-            clearInterval(inta);
-            
-            if(e.target.value == "Play"){
-                ae  = document.getElementById("audio_"+st);
-                ar = document.getElementById("range_"+st);
-                if (wm.has(ae)) { 
-                    track = wm.get(ae); 
-                } else { 
-                    track = audioContext.createMediaElementSource(ae); 
-                  wm.set(ae, track); 
-                }
-                track.connect(audioContext.destination);
-                track.connect(gainNode).connect(audioContext.destination);
-                ae.play();
-                if(ar.max == -5){
-                    ar.max = ae.duration;
-                    if(os != "iOS"){
-                        ae.volume = parseInt(volume) / 100;
-                    }
-                }
-                e.target.value = "Stop"
-                if(play_num != st){
-                    if(play_num != 0){
-                        rtt = 0;
-                        document.getElementById("range_"+ play_num).style.visibility = "hidden";
-                        document.getElementById("audio_"+play_num).pause();
-                        document.getElementById("audio_"+play_num).currentTime = 0;
-                        ar.value = 0;
-                        document.getElementById("title_"+play_num).value = "Play";
-                    }
-                    ar.style.visibility = "visible";
-                }
-                play_num = st;
-                inta = setInterval(change_value, 1000);
-            }else{
-                e.target.value = "Play";
-                document.getElementById("audio_"+st).pause();
+        if(ni != "play_button"){
+            be = e;
+            st = ni.substring(6);
+        }
+        vale = String(be.value);
+        clearInterval(inta);
+        if(vale == play_icon){
+            ae = document.getElementById("audio_"+st);
+            document.getElementById("title_text").innerHTML = document.getElementById("tt_" + st).textContent;
+            ae.play();
+            input_range.max = Math.floor(ae.duration);
+            if(os != "iOS"){
+                ae.volume = parseInt(volume) / 100;
             }
+            be.value = stop_icon;
+            pb.value = stop_icon;
+            if(play_num != st && play_num != "0"){
+                rtt = 0;
+                input_range.value = 0;
+                document.getElementById("audio_"+play_num).pause();
+                document.getElementById("audio_"+play_num).currentTime = 0;
+                input_range.value = 0;
+                document.getElementById("title_"+play_num).value = play_icon;
+            }
+            play_num = st;
+            inta = setInterval(change_value, 1000);
+        }else{
+            be.value = play_icon;
+            pb.value = play_icon;
+            document.getElementById("audio_"+st).pause();
         }
-        else if(ni.indexOf('delete') != -1)
-        {
-            let st = ni.substring(7);
-            document.getElementById("send_title").value = document.getElementById("tt_" + st).textContent;
-        }
-    });
+    }
+    function Set_delete(e){
+        let st2 = ni.substring(7);
+        document.getElementById("send_title").value = document.getElementById("tt_" + st2).textContent;
+    }
 
     function Music_List(e){
         if(e.textContent == "マイミュージック"){
@@ -285,6 +418,24 @@
             }
         }
     }
+
+    function Play_Way(){
+        if(pw == 1){
+            pw = 2;
+            pwb.value = "🔁"
+            pwb.style.opacity = "1";
+        }
+        else if(pw == 2){
+            pw = 3;
+            pwb.value = "🔂";
+        }
+        else if(pw == 3){
+            pw = 1;
+            pwb.value = "🔁";
+            pwb.style.opacity = 0.5;
+        }
+    }
+    
     </script>
 
 <script
