@@ -9,19 +9,19 @@
         h1 {
           position: relative;
           color: #158b2b;
-          font-size: 2.5vmax;
+          font-size: 9vmin;
           text-align: center;
           margin: 1em 0;
         }
         h1:before {
           content: "";
           position: absolute;
-          top: -1vmax;
+          top: -2.4vmin;
           left: 50%;
-          width: 13vmax;
-          height: 5vmax;
+          width: 34vmin;
+          height: 17vmin;
           border-radius: 50%;
-          border: 0.5vmax solid #a6ddb0;
+          border: 1.5vmin solid #a6ddb0;
           border-left-color: transparent;
           border-right-color: transparent;
           -webkit-transform: translateX(-50%);
@@ -32,8 +32,8 @@
 <body>
     <div class="container">
         <h1>Idrive</h1>
-            <div id="login_card" class="tab-pane active">
-                <div class="card mt-3 mx-auto" style="width: 60%;">
+            <div id="login_card" class="tab-pane active hed">
+                <div class="card mt-3 mx-auto" style="width: 70vmin;font-size: 3vmin;">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" id="menu-list" role="tablist">
                           <li class="nav-item">
@@ -47,19 +47,19 @@
                         <div class="card-body">
                             ユーザー名
                             <br>
-                            <input type="text" class="form-control" id="un">
+                            <input style="height: 5vmin;" type="text" class="form-control" id="un">
                             <br>
                             パスワード
                             <br>
-                            <input type="password" class="form-control" id="pass">
+                            <input style="height: 5vmin;" type="password" class="form-control" id="pass">
                         </div>
                         <div class="card-footer">
                             <div class="tab-content mt-3">
                                 <div class="tab-pane active" id="login_form">
-                                    <button class="btn btn-outline-primary" id="lg">ログイン</button>
+                                    <button style="font-size: 3vmin;" class="btn btn-outline-primary" id="lg">ログイン</button>
                                 </div>
                                 <div class="tab-pane" id="signin_form">  
-                                    <button class="btn btn-outline-primary" id="si">サインイン</button>
+                                    <button style="font-size: 3vmin;" class="btn btn-outline-primary" id="si">サインイン</button>
                                 </div>
                             </div>
                         </div>
