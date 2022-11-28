@@ -13,3 +13,4 @@ class data(models.Model):
         size = 2,
         max_length = (2 * 10001),
     )
+    volume = models.IntegerField(default=50)

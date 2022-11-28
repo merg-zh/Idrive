@@ -106,7 +106,12 @@
             <form action="/home/" method="POST" id="accept" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="file" name="file" accept=".mp3" id="mf" style="display: none;" multiple>
-                </form>
+            </form>
+
+            <form action = "/home/" method = "POST">
+                {% csrf_token %}
+                <button type="button" id="delete_pl" style="display: none;font-size:min(1.9vmax, 20px);" data-toggle="modal" data-target="#DeleteModal2"  class="btn btn-danger my-1">プレイリストを削除</button>
+            </form>
             {% load static%}
 
             <div class="row">
@@ -124,17 +129,9 @@
                             <button style="font-size:1.2vw;" class="dropdown-toggle btn btn-info" data-toggle="dropdown">＋</button>
                                 <ul class="dropdown-menu">
                                     {% for name in list_names %}
-                                    <form action="/home/" method="POST">
-                                        {% csrf_token %}
-                                    <input type="text" value="{{name}}$${{ti}}" name="name_cout" style="display: none;">
-                                    <button type="submit" class="btn btn-secondary btn-light btn-block" name="append_playlist">{{name}}</button>
-                                    </form>
+                                    <button type="button" class="btn btn-secondary btn-light btn-block" onclick="Append_List(this);" name="{{name}}$${{ti}}" id="append_list_{{forloop.counter}}">{{name}}</button>
                                     {% endfor %}
-                                    <form action="/home/" method="POST">
-                                        {% csrf_token %}
-                                        <input type="text" style="display: none;" name="list_name" id = "dpln_{{forloop.counter}}">
-                                        <button type="submit" id="dpl_{{forloop.counter}}" class="btn btn-secondary btn-black btn-block" style="display: none;" name="delete_pl">このリストから削除</button>
-                                    </form>
+                                    <button type="button" onclick="Left_List(this);" id="dpl_{{forloop.counter}}" class="btn btn-secondary btn-black btn-block" style="display: none;" name="delete_pl">リストから削除</button>
                                 </ul>
                         </ul>
                     </div>
@@ -169,7 +166,7 @@
                 <button id="pw_button" type="button" class="my-2 music_button" style="opacity: 0.5;"onclick="Play_Way();"><img class="under_button" src="{{STATIC_URL}}icon/repeat_all.png"></button>
             </div>
             <div class="container" style="display: flex;text-align: center;justify-content: center;align-items: center;">
-                <input type="range" id="range" style="width: 50%;height:50%;" max="-5" value="0" step="1" onchange="Change(this);">
+                <input type="range" id="range" style="width: 50%;height:50%;" max="-5" value="0" step="1" oninput="Change(this);">
             </div>
         </footer>
     </body>
@@ -209,6 +206,24 @@
     </div>
 </form>
 
+<!--　プレイリスト削除ダイアログ　-->
+<form action="/home/" method="POST">
+    {% csrf_token %}
+        <div class="modal fade" id="DeleteModal2" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="text">本当に削除しますか？</h4>
+                    </div>
+                    <div class="modal-body">
+                        <button name="delete_playlist" type="submit" style="font-size:min(1.9vmax, 20px);"id="delete_playlist" class="btn btn-danger">プレイリストを削除</button>
+                        <button type="button" class="btn btn-info" data-dismiss="modal">戻る</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
 <form action="/home/" method="POST">
 {% csrf_token %}
     <div class="modal fade" id="Create_List" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
@@ -236,9 +251,14 @@
 <img style="display: none;" name="icon" src = "{{STATIC_URL}}icon/shuffle.png">
 <img style="display: none;" name="icon" src = "{{STATIC_URL}}icon/ctl_left.png">
 
+<p id="volume_value" style="display: none;">{{volume}}</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 <script type="text/javascript">
     let audio_list = [];
     let play_list = [];
+    let playlist_names = [];
     let data_num = 0;
     let play_lt = "";
     let input_range = document.getElementById("range");
@@ -278,6 +298,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', function(){
+        document.getElementById("volume_range").value = parseInt(document.getElementById("volume_value").textContent);
         $('.drawer').drawer();
 
         try{
@@ -361,8 +382,6 @@
             else{
                 random_num = Math.floor(Math.random() * (true_num.length + 1));
             }
-
-            console.log(random_num);
             PLay_Pose(document.getElementById("title_"+true_num[random_num]));
         }
         else PLay_Pose(document.getElementById("title_"+num));
@@ -421,10 +440,9 @@
     }
 
     function Change(e){
-        ae.currentTime = e.value;
+        ae.currentTime = parseInt(e.value);
         rtt = parseInt(e.value);
     }
-
     
     function PLay_Pose(e){
         let ni = String(e.id);
@@ -471,8 +489,8 @@
         }
     }
     function Set_delete(e){
-        let st2 = ni.substring(7);
-        document.getElementById("send_title").value = document.getElementById("tt_" + st2).textContent;
+        let st2 = e.id.substring(7);
+        document.getElementById("send_title").value = play_list[parseInt(st2) - 1];
     }
 
     function Music_List(e){
@@ -482,6 +500,8 @@
                 let elements = document.getElementsByName("delete_pl");
                 for(let element of elements){element.style.display="none";}
             }
+
+            document.getElementById("delete_playlist").style.display = "none";
         }
     }
 
@@ -497,9 +517,11 @@
             else {
                 document.getElementById("card_"+i2).style.display = "block";
                 document.getElementById("dpl_" + i2).style.display = "block";
-                document.getElementById("dpln_" + i2).value = i2+"$$"+e.id;
+                document.getElementById("dpl_" + i2).value = i2 + "$$" + e.id;
             }
         }
+        document.getElementById("delete_playlist").value = e.id;
+        document.getElementById("delete_pl").style.display = "block";
     }
 
     function Play_Way(){
@@ -528,6 +550,78 @@
             shuffle_flag = true;
         }
     }
+
+    function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        function Append_List(e){
+            var csrf_token = getCookie("csrftoken");
+            let text = (e.name).split("$$");
+            let num = audio_list.indexOf(text[1]);
+            play_list[num].push(parseInt(e.id.substring(12)) - 1);
+            $.ajax({
+                'url': '{% url "app_first:ajax-list" %}',
+                'type': 'POST',
+                'data': {
+                    'name_cout': e.name,
+                },
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    }
+                },
+                'dataType': 'json',
+            });
+        }
+
+        function Left_List(e){
+            var csrf_token = getCookie("csrftoken");
+            let text = e.value.split("$$");
+            let sn = parseInt(text[0]) - 1;
+            delete play_list[sn][play_list[sn].indexOf(parseInt(text[1]) - 1)];
+            document.getElementById(text[1]).click();
+            $.ajax({
+                'url': '{% url "app_first:ajax-left" %}',
+                'type': 'POST',
+                'data': {
+                    'song_name': e.value,
+                },
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    }
+                },
+                'dataType': 'json',
+            });
+        }
     
     </script>
 
