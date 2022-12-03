@@ -363,6 +363,7 @@
     });
 
     function Sent_Play(num, now_num){
+        now_num = parseInt(now_num);
         if(shuffle_flag){
             let true_num = [];
             let i = 0;
@@ -372,19 +373,19 @@
                     true_num.push(i);
                 }
             }
-            let random_num = 0;
+            let random_num = true_num.indexOf(now_num);
             if(now_num != -1){
-                now_num = parseInt(now_num);
                 while(true_num[random_num] == now_num){
-                    random_num = Math.floor(Math.random() * (true_num.length + 1));
+                    random_num = Math.round(Math.random() * true_num.length);
                 }
             }
             else{
-                random_num = Math.floor(Math.random() * (true_num.length + 1));
+                random_num = Math.round(Math.random() * true_num.length);
             }
-            PLay_Pose(document.getElementById("title_"+true_num[random_num]));
+            console.log(true_num, random_num);
+            document.getElementById("title_"+true_num[random_num]).click();
         }
-        else PLay_Pose(document.getElementById("title_"+num));
+        else document.getElementById("title_"+num).click();
     }
 
     function Next(e){
