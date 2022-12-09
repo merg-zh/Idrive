@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/css/drawer.min.css">
+        <link href="https://fonts.googleapis.com/earlyaccess/nicomoji.css" rel="stylesheet">
+        <title>ホーム</title>
+
+        <style>
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand navbar-dark bg-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand mr-auto hed" href="/" style="font-size:min(3vmax,35px);">Idrive</a>
+              <ul class="dropdown">
+                <button class="dropdown-toggle btn btn-info float-right hed" data-toggle="dropdown">{{ request.user }}</button>
+                    <ul class="dropdown-menu dropdown-menu-right hed">
+                      <a href="{% url 'app_first:logout' %}" class="btn btn-light btn-block" style="white-space: nowrap;">ログアウト</a>
+                    </ul>
+              </ul>
+            </div>
+        </nav>
+
+        <div class="container">
+            <h1 style="font-family: Nico Moji;">リンクをはってください</h1>
+            <form action="/download/"  method="POST">
+                {% csrf_token %}
+                <input type="text" class="form-control my-1" name="link">
+                <h1 style="font-family: Nico Moji;">なまえ</h1>
+                <input type="text" class="form-control my-1" name="name">
+                <button type="submit" class="btn btn-success" style="font-size:min(1.2vw, 25px);" name="download">DownLoad</button>
+            </form>
+            
+        </div>
+    </body>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iScroll/5.1.3/iscroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/drawer/3.1.0/js/drawer.min.js"></script>
+</html>

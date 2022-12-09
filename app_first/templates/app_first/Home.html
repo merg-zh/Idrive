@@ -72,10 +72,6 @@
                 width: 60px;
             }
 
-            .hed{
-                font-size:2vmin;
-            }
-
             @media screen and (max-width:950px) {
                 .under_button{
                     width: 10vw;
@@ -93,11 +89,14 @@
               <button class="mx-2 hed" type="button" onclick="Open();" id="drawer" style="font-size:min(2vmax,20px);">☰</button>
               <a class="navbar-brand mr-auto hed" href="/" style="font-size:min(3vmax,35px);">Idrive</a>
               <input type="range" max="100" step="1" value="50" min="0" id="volume_range" style="width: 15%;" class="mx-4 hed">
-              <button type="button" class="btn btn-primary my-1 hed" style="white-space: nowrap;" id="sf">ファイルを選択</button>
               <ul class="dropdown">
                 <button class="dropdown-toggle btn btn-info float-right hed" data-toggle="dropdown">{{ request.user }}</button>
-                    <ul class="dropdown-menu hed">
-                      <a href="{% url 'app_first:logout' %}" class="btn btn-success my-1 hed" style="white-space: nowrap;">ログアウト</a>
+                    <ul class="dropdown-menu dropdown-menu-right hed">
+                      <a href="{% url 'app_first:logout' %}" class="btn btn-light btn-block" style="white-space: nowrap;">ログアウト</a>
+                      <br>
+                      <button type="button" class="btn btn-light btn-block" id="sf">ファイルを選択</button>
+                      <br>
+                      <a href='/download/' class="btn btn-light btn-block">Youtube</a>
                     </ul>
               </ul>
             </div>
@@ -178,6 +177,7 @@
 		<nav class="drawer-nav bg-secondary" role="navigation">
 			<ul class="drawer-menu">
 				<li><button type="button" class="btn btn-light btn-block my-2" onclick="Music_List(this);">マイミュージック</button></li>
+                <li><button type="button" class="btn btn-light btn-block my-2" onclick="Music_List(this);">不明なジャンル</button></li>
                 {% for name in list_names %}
                 <li><button type="button" class="btn btn-info btn-block my-1" onclick="Open_List(this);" id="{{forloop.counter}}">{{name}}</button></li>
                 {% endfor %}
@@ -503,6 +503,22 @@
             }
 
             document.getElementById("delete_pl").style.display = "none";
+        }
+        else if(e.textContent == "不明なジャンル"){
+            for(let i = 1; i <= data_num; i++){
+                if(play_list[i - 1].length == 1)document.getElementById("card_"+i).style.display = "block";
+                else{
+                    jatch = false;
+                    for(let text of play_list[i - 1].slice(1, -1)){
+                        if(typeof(text) != "number")jatch = true;
+                    }
+                    if(jatch)document.getElementById("card_"+i).style.display = "block";
+                    else document.getElementById("card_"+i).style.display = "none";
+                }
+
+                let elements = document.getElementsByName("delete_pl");
+                for(let element of elements){element.style.display="none";}
+            }
         }
     }
 
