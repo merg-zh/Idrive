@@ -11,4 +11,3 @@ sqlparse==0.4.3
 tzdata==2022.6
 websockets==10.4
 whitenoise==6.2.0
-yt_dlp==2022.11.11
