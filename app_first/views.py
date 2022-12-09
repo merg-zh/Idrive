@@ -7,7 +7,6 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from app_first.models import data
 from idrive.settings import STATICFILES_DIRS
-from app_first.yt_dlp import YoutubeDL
 import os
 
 def TopView(request):
@@ -119,32 +118,6 @@ def HomeView(request):
     return render(request, 'app_first/Home.html', {'title':title, 'list_names':pl, 'play_list':play_list, 'volume':user_data.volume})
 
 def Dy(request):
-    username = str(request.user)
-    user_data = data.objects.get(username = username)
-    if 'download' in request.POST:
-        link = request.POST['link']
-        name = str(request.POST['name'])
-        if link and name:
-            ydl_opts = {
-                "format": "mp3/bestaudio/best",
-                "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                }
-                ],
-            }
-            with YoutubeDL(ydl_opts) as ydl:
-                ydl.download([link])
-            dir_path = "" 
-            dir_list = os.listdir(dir_path)
-            path = ""
-            for i in range(len(dir_list)):
-              if ".mp3" == os.path.splitext(dir_list[i])[1]:
-                path = os.path.join(dir_path, dir_list[i])
-            os.rename(path, STATICFILES_DIRS[0] +"/"+username+"/"+name+".mp3")
-            user_data.title.append(name)
-            user_data.save()
     return render(request, 'app_first/Dy.html')
 
 class LogoutView(LoginRequiredMixin, LogoutView):

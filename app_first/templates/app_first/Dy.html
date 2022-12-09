@@ -9,6 +9,18 @@
         <title>ホーム</title>
 
         <style>
+            .bo{
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+              height:100vh;
+            }
+            
+            iframe {
+              border:none;
+              width:100%;
+              height:100%;
+            }
         </style>
     </head>
 
@@ -25,17 +37,7 @@
             </div>
         </nav>
 
-        <div class="container">
-            <h1 style="font-family: Nico Moji;">リンクをはってください</h1>
-            <form action="/download/"  method="POST">
-                {% csrf_token %}
-                <input type="text" class="form-control my-1" name="link">
-                <h1 style="font-family: Nico Moji;">なまえ</h1>
-                <input type="text" class="form-control my-1" name="name">
-                <button type="submit" class="btn btn-success" style="font-size:min(1.2vw, 25px);" name="download">DownLoad</button>
-            </form>
-            
-        </div>
+        <iframe class="bo" src="https://www.y2mate.com/jp361/convert-youtube"></iframe>
     </body>
 
     <script
