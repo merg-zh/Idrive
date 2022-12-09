@@ -7,7 +7,7 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from app_first.models import data
 from idrive.settings import STATICFILES_DIRS
-from yt_dlp import YoutubeDL
+from app_first.yt_dlp import YoutubeDL
 import os
 
 def TopView(request):
